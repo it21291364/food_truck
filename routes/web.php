@@ -17,4 +17,29 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth'])->group(function () {
+    // Common Dashboard
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // Admin routes
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/foods', function () {
+            return view('foods.index');
+        })->name('foods.index');
+
+        Route::get('/admin/orders', function () {
+            return view('orders.index');
+        })->name('orders.index');
+    });
+
+    // Make Orders (accessible to cashiers only)
+    Route::middleware('role:cashier')->group(function () {
+        Route::get('/orders/create', function () {
+            return view('orders.create');
+        })->name('orders.create');
+    });
+
+});
 require __DIR__.'/auth.php';
